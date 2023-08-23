@@ -1,0 +1,12 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" >
+    <!--aura:handler name="init" value="{!this}" action="{!c.myAction}"/-->
+    <lightning:card>
+        <lightning:layout>
+            <legend class="slds-form-element__legend slds-form-element__label">Enter Account Name:</legend>   <!--it's make label bold-->  
+            <lightning:input name="input" variant="label-hidden" class="slds-size_1-of-6"></lightning:input>
+            <lightning:layoutItem class="slds-p-left_x-small">
+                <lightning:button variant="Brand" label="Search Account"/>
+            </lightning:layoutItem>
+        </lightning:layout>
+    </lightning:card>
+</aura:component>

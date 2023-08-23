@@ -1,0 +1,90 @@
+<template>
+    <!-- <div if:true={showSpinner}>
+        <lightning-spinner
+            alternative-text="Loading..." variant="brand" class="slds-is-fixed">
+        </lightning-spinner>
+    </div> -->
+     <!-- <template if:false={isRedirect}>
+        <div class="border">
+            <div class="items"> -->
+                <div >
+                    <img src={image}>
+                </div>
+                
+                <!-- <template if:true={isCreditCardEnable}>
+                    <div class="input">
+                        <lightning-input name="Card Number" label="Card Number" type="counter" placeholder="1234 XXXX XXXX XXXX" onchange={handleChange} min-length="8" max-length="30" ></lightning-input>
+                    </div>
+                    <div class="slds-grid">
+                        <div class="slds-col">
+                            <lightning-input name="Amount" label="Amount" placeholder="$123" type="number" onchange={handleChange}  formatter="currency" step="0.01"></lightning-input>
+                        </div>
+                        <div class="slds-col">
+                            <lightning-input name="CVV Number" label="CVV Number" placeholder="XXX" type="number"  onchange={handleChange} min="3" max-length="3"  ></lightning-input>
+                        </div>
+                    </div>
+                    <div class="slds-grid">
+                        <div class="slds-col">
+                            <lightning-combobox name = "Expire Month" label="Expire Month"   value={value} options={monthOptions} placeholder="-Month-" onchange={handleChange}></lightning-combobox>
+                        </div>
+                        <div class="slds-col">
+                            <lightning-combobox name="Expire Year" label="Expire Year" value={value} options={yearOptions} placeholder="-Year-" onchange={handleChange} ></lightning-combobox>
+                        </div>
+                    </div>
+                    
+                    <div class="slds-grid">
+                        <div class="items">
+                            <button class="button" onclick={handlePayment}>Place Order</button>
+                        </div>
+                        
+                    </div>
+                    <div class="slds-grid">
+                        <div class="items">
+                            <a onclick={changePage}> Click here </a> to pay using Echeck  
+                        </div>
+                    </div>
+                </template> -->
+
+                <!-- <template if:false={isCreditCardEnable}>
+                    <div class="slds-grid">
+                        <div class="slds-col">
+                            <lightning-input name="Routing Number" label="Routing Number" type="counter" placeholder="012XXXXXX" onchange={handleChange} ></lightning-input>
+                        </div>
+                        <div class="slds-col">
+                            <lightning-input name="Account Number" label="Account Number" type="counter" placeholder="012XXXXXX" onchange={handleChange} ></lightning-input>
+                        </div>
+                    </div>
+                    <div class="input" >
+                            <lightning-input name="Name Of Account Holder" label="Name Of Account Holder" placeholder="XYZ" onchange={handleChange} ></lightning-input>
+                        </div>
+                        <div class="input">
+                            <lightning-input name="Amount" label="Amount" type="number" placeholder="$123" onchange={handleChange} formatter="currency" step="0.01" ></lightning-input>
+                        </div>
+                    
+                    
+                    <div class="slds-grid">
+                        <div class="items">
+                            <button class="button" onclick={handlePaymentByEcheck}>Place Order</button>
+                        </div>
+                        
+                    </div>
+                    <div class="slds-grid">
+                        <div class="items">
+                            <a onclick={changePage}> Click here </a> to pay using credit card 
+                        </div>
+                    </div>
+
+                </template>
+                </div>
+        </div>
+    </template>  
+
+    <template if:true={isRedirect}>
+        <div class="border">
+            <div class="slds-grid slds-text-align_center slds-text-heading_medium slds-text-color_success">
+                <p class="text">This transaction has been succesfully completed.</p>
+            </div>
+            <div class="slds-text-align_center"><a onclick={returnTopaymentPage}>Click here </a>to return to payment page</div>
+        </div>
+    </template> -->
+</template>

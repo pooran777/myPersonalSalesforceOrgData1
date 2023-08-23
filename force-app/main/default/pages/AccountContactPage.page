@@ -1,0 +1,30 @@
+<apex:page controller="AccountContactControllerClass">
+    <apex:form >
+        <apex:inputText label="Enter Account Name" value="{!searchAcc}"/>
+        <apex:commandButton value="Search Account" action="{!getAccount}" reRender="pb,accBlock"/>
+        <apex:pageBlock id="pb">
+            <apex:pageBlockSection id="accBlock" rendered="{!showAccList}">
+                <apex:pageBlockTable value="{!accList}" var="acc">
+                    <apex:column >
+                        <apex:outputLink value="/{!acc.Id}" target="_blank">{!acc.Name}</apex:outputLink>
+                    </apex:column>
+                    <apex:column headerValue="Related Contact">
+                        <apex:commandButton value="Search contact" action="{!getContact}" reRender="pb,conBlock">
+                            <apex:param assignTo="{!accId}" value="{!acc.Id}" name="accId"/>
+                        </apex:commandButton>
+                    </apex:column>               
+                </apex:pageBlockTable>
+            </apex:pageBlockSection>
+            <apex:pageBlockSection id="conBlock">
+                <apex:pageBlockTable value="{!conList}" var="con">
+                    <apex:outputLink value="/{!con.Id}" target="_blank">{!con.Name}</apex:outputLink>
+                    <apex:column value="{!con.Email}"/>
+                    <!--apex:column value="{!con.Pan_No__c}"/-->
+                </apex:pageBlockTable>
+                <apex:outputPanel rendered="{!NoContact}">
+                    {!message}
+                </apex:outputPanel>
+            </apex:pageBlockSection>
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>

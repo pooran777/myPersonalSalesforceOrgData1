@@ -1,0 +1,58 @@
+<template>
+    <!--lightning-button variant="brand" label="Brand" title="Primary action" onclick={Authorization}/></lightning-button-->
+    
+    <!--table>
+        <aura:iteration items="{!v.data}" var="item">
+                <tr>
+                    <aura:if isTrue="{!item.mimeType == 'application/vnd.google-apps.folder'}" >
+                        <td><lightning:icon iconName="standard:folder"></lightning:icon></td>
+                        <td><a onclick="{!c.fetchFile}" a="{!item.id}"  aria-label="{!item.id}" >{!item.name}</a></td>
+                        <td><a onclick="{!c.onClickDelete}" aria-label="{!item.id}"> <lightning:icon iconName="action:delete"></lightning:icon> </a></td>
+                        <aura:set attribute="else">
+                            <td><lightning:icon iconName="standard:file"></lightning:icon></td>
+                            <td><a href="{!'https://drive.google.com/open?id=' + item.id}" target="_blank"  aria-label="{!item.id}" >{!item.name}</a></td>
+                            <td><a onclick="{!c.onClickDelete}" aria-label="{!item.id}"> <lightning:icon iconName="action:delete"></lightning:icon> </a></td>
+                            <td><a href="{!'https://drive.google.com/uc?id='+ item.id + '&amp;export=download'}"  ><lightning:icon iconName="action:download"></lightning:icon></a></td>
+                        </aura:set>
+                    </aura:if>    
+                </tr>
+        </aura:iteration>
+    </table-->
+    
+
+    <lightning-breadcrumbs>
+        <template for:each={breadcrumbData} for:item="crumb">
+            <lightning-breadcrumb
+                key={crumb.id}
+                data-id={crumb.id}
+                label={crumb.label}
+                name={crumb.name}
+                onclick={handleNavigateTo}>
+            </lightning-breadcrumb>
+        </template>
+    </lightning-breadcrumbs>
+
+    <lightning-card>
+        <div class="slds-m-around_medium">
+            <table>
+                <template for:each={data} for:item="item">
+                    <tr key={item.id}>
+                        <template if:true={item.isFolder}>
+                            <td><p><lightning-icon icon-name="standard:folder"></lightning-icon></p></td>
+                            <td><a data-id={item.id} data-name={item.name} onclick={openFolder}>{item.name}</a></td><br/><br/>
+                            <td><div class="slds-m-bottom_x-small"><a onclick={onClickDelete} data-id={item.id}><lightning-icon icon-name="action:delete"></lightning-icon></a></div></td>
+                        </template>
+
+                        <template if:false={item.isFolder}>            
+                            <td><p><lightning-icon icon-name="standard:file"></lightning-icon></p></td>
+                            <!--p><lightning-formatted-url value="https://drive.google.com/open?id="+{item.id}  target="_blank" >{item.name}</lightning-formatted-url></p-->
+                            <td><a  data-id={item.id} onclick={openFile}>{item.name}</a></td><br/><br/>    
+                            <td><div class="slds-m-bottom_x-small"></div><a onclick={onClickDelete} data-id={item.id}> <lightning-icon icon-name="action:delete"></lightning-icon> </a></div></td>
+                        </template>    
+                    </tr>
+                </template>
+            </table>
+        </div>
+    </lightning-card>
+    
+</template>

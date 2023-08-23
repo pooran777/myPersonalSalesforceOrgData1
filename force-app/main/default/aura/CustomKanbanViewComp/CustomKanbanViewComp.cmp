@@ -1,0 +1,124 @@
+<aura:component Controller="CustomKanabanView" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" >
+    <aura:attribute name="allObject" type="List" />
+    <aura:attribute name ="selectedObject" type="String"/> 
+    <aura:attribute name="allField" type="List"/>    
+    <aura:attribute name="kanbanPicklistField" type="String"/>
+    
+    <aura:attribute name="pickValues" type="List"/> 
+    <aura:attribute name="recordsList" type="List"/>
+    <!--aura:attribute name="kanbanData" type="List"/-->
+    
+    <aura:handler name="init" value="{!this}" action="{!c.init}" />
+    
+    <!--aura handler with waiting and donewaiting events-->
+    <aura:handler event="aura:waiting" action="{!c.showSpinner}"/>
+    <aura:handler event="aura:doneWaiting" action="{!c.hideSpinner}"/>
+    
+    <aura:attribute name="spinner" type="boolean" default="FALSE"/>
+    
+    <!--loading spinner start-->
+    <aura:if isTrue="{!v.spinner}">
+        <div aura:id="spinnerId" class="slds-spinner_container">
+            <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+                <span class="slds-assistive-text">Loading...</span>
+                <div class="slds-spinner__dot-a"></div>
+                <div class="slds-spinner__dot-b"></div>
+            </div>
+        </div>
+    </aura:if>
+    <!-- Loading spinner end-->   
+
+    <lightning:card>
+        <div class="slds-grid slds-gutters">
+            <div class="slds-col">
+                <span><lightning:select class = "slds-size_4-of-12" name="Objects" label="Select object:" aura:id="objId" value="{!v.selectedObject}" onchange = "{!c.allFields}">
+                    <option value="">--None--</option>
+                    <aura:iteration items="{!v.allObject}" var="objectName">            
+                        <option text = "{!objectName.label}" value="{!objectName.value}" />  
+                    </aura:iteration>
+                    </lightning:select>
+                </span>
+            </div>
+            <aura:if isTrue="{!v.selectedObject}">
+                <div class="slds-col">
+                    <span><lightning:select class = "slds-size_4-of-12" name="Objects" label="PickList Fields:" value="{!v.kanbanPicklistField}" onchange = "{!c.fieldChange}">
+                        <option value="">--None--</option>
+                        <aura:iteration items="{!v.allField}" var="pickList">
+                            <option text = "{!pickList.label}" value="{!pickList.value}" />  
+                        </aura:iteration>
+                        </lightning:select></span>
+                </div>
+            </aura:if>
+            <aura:if isTrue="{!v.kanbanPicklistField}">
+                <div class="slds-col">
+                    <span> <lightning:button label="Process" onclick="{!c.KanbanViewOfRecords}" /></span>
+                </div>
+            </aura:if>
+        </div>       
+    </lightning:card>
+
+    <div class="slds-scrollable" style="width:100%;height: auto;">
+        <aura:iteration var="pickVal" items="{!v.pickValues}">
+            <div class="stageContainer" style="width:15%;">                               
+                <div class="slds-grid slds-grid_vertical">
+                    <!--div>
+                        <div class="slds-media slds-no-space slds-has-divider_bottom-space slds-media_center" style="{!'width:calc(100vw/'+(v.pickValues.length+1)+')'}">
+                            <div class="slds-media__body"--> 
+                    
+                    <!--For PickList Values -->   
+                    <div class="slds-path">
+                        <div class="slds-grid slds-path__track">
+                            <div class="slds-grid slds-path__scroller-container">
+                                <div class="slds-path__scroller">
+                                    <div class="slds-path__scroller_inner">
+                                        <ul class="slds-path__nav" role="listbox" aria-orientation="horizontal">
+                                            <li class="slds-path__item slds-is-current slds-is-active" role="presentation">
+                                                <a aria-selected="true" class="slds-path__link" href="#" id="path-1" role="option" tabindex="0">
+                                                    <span class="slds-path__title">{!pickVal.Name} ({!pickVal.ct})</span>
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>    
+                        </div>
+                    </div>
+                    
+                    <!-- </div>   
+                        </div>
+                    </div>-->
+                </div>
+                <lightning:card>
+                    <ul ondrop="{!c.drop}" ondragover="{!c.allowDrop}" class="slds-has-dividers_around-space dropZone" data-Pick-Val="{!pickVal.Name}" style="height:70vh;overflow-y:auto;">
+                        <aura:iteration var="objRecord" items="{!v.recordsList}">
+                            <aura:if isTrue="{!objRecord.pickList ==  pickVal.Name}">
+                               
+                                <li class="slds-item slds-m-around_small" draggable="true" ondragstart="{!c.drag}" id="{!objRecord.Id}">
+                                    <article class="slds-tile slds-tile_board">
+                                        
+                                        <h3 class="slds-truncate" title="{!objRecord.Name}">
+                                            <aura:if isTrue="{!v.selectedObject == 'Case'}" >
+                                                <a href="javascript:void(0);" onclick="{!c.navigateRecord}">
+                                                    <span class="slds-truncate" id="{!objRecord.Id}">{!objRecord.CaseNumber}</span>
+                                                    
+                                                </a>
+                                            </aura:if>
+                                            <aura:if isTrue = "{!v.selectedObject != 'case'}">
+                                                <a href="javascript:void(0);" onclick="{!c.navigateRecord}">
+                                                    <span class="slds-truncate" id="{!objRecord.Id}">{!objRecord.Name}</span>
+                                                    
+                                                </a>
+                                            </aura:if>
+                                        </h3>
+                                        <p >{!objRecord.pickList}</p>
+                                        <p>{!objRecord.CreatedDate}</p>
+                                    </article>
+                                </li>
+                            </aura:if>                          
+                        </aura:iteration>
+                    </ul>
+                </lightning:card>
+            </div>
+        </aura:iteration>
+    </div>
+</aura:component>

@@ -1,0 +1,14 @@
+<template>
+    <lightning-card>
+        <lightning-input name="Name" onchange={handle}></lightning-input> 
+        <template for:each={accounts.data} for:item="item">
+            <lightning-layout vertical-align="center" key={item.id}>   
+               <li> {item.Name}
+                   </li>
+                   <li>
+                {item.AccountNumber}
+            </li>
+        </lightning-layout> 
+    </template>
+    </lightning-card>
+</template>

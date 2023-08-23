@@ -1,0 +1,62 @@
+<apex:page controller="ObjectController" >
+    <apex:form >
+        <apex:actionFunction name="ObjectSelect" action="{!ObjectFields}"/>
+        <apex:pageBlock >
+            <apex:outputLabel value="Select Object :- "/>
+            <apex:selectList value="{!selectedObject}" size="1" onchange="ObjectSelect()">
+                <apex:actionSupport event="onchange"/>
+                <apex:selectOptions value="{!ObjectNames}"/>
+            </apex:selectList>   
+            <apex:commandButton value="Reset" action="{!Reset}" status="paginationStatus" />
+        </apex:pageBlock>
+        <apex:pageBlock rendered="{!selectedObject != null}" >
+            <apex:panelGrid columns="4" id="f1">
+                <apex:pageBlockSection >
+                    <apex:outputLabel value="{!selectedObject} : fields"/>                                   
+                    <apex:selectList value="{!selected}" multiselect="true" size="12">                      
+                        <apex:selectOptions value="{!notSelectedOptions}"/>
+                    </apex:selectList>
+                </apex:pageBlockSection>
+                <apex:panelGrid columns="1">
+                    <apex:commandButton value="Add" action="{!add}" reRender="f1" status="paginationStatus"/>
+                    <apex:commandButton value="Remove" action="{!remove}" reRender="f1" status="paginationStatus"/>                 
+                </apex:panelGrid>                
+                <apex:pageBlockSection >
+                    <apex:outputLabel value="Selected :fields" />
+                    <apex:selectList value="{!removed}" multiselect="true" size="12">
+                        <apex:selectOptions value="{!selectedOptions}"/>
+                    </apex:selectList>
+                </apex:pageBlockSection>
+                
+                <apex:commandButton Value="Process" disabled="{!processbtn}" reRender="op" oncomplete="jsfunction()" style="margin-top :200px;margin-left:250px;" status="paginationStatus"/>          
+                
+                <!-- Spinner-->
+                <apex:actionStatus id="paginationStatus" >
+                    <apex:facet name="start" >
+                        <apex:outputPanel >
+                            <div style="position: fixed; left: 0; top: 0; bottom: 0; right: 0; margin: 20% 50%">
+                                <div style="display: inline-block; padding: 2px; background-color: #fff; width: 125px;">
+                                    <img src="/img/loading32.gif" width="25" height="25"/>
+                                    <apex:outputLabel value="Loading..."/>
+                                </div>
+                            </div>                
+                        </apex:outputPanel>    
+                    </apex:facet>
+                </apex:actionStatus>
+                
+            </apex:panelGrid>
+        </apex:pageBlock>
+    </apex:form> 
+    <script>
+    function jsfunction(){
+        displayRecord();
+    }
+    </script>
+    <apex:outputpanel id="op">
+        <apex:pageblock >
+            <apex:pageBlockSection >
+                <c:ObjectPaginationComp oneSelectedObject="{!selectedObject}" allSelectedFields="{!selectedFields}"/>
+            </apex:pageBlockSection>
+        </apex:pageblock>
+    </apex:outputpanel>
+</apex:page>

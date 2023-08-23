@@ -1,0 +1,7 @@
+<apex:page controller="NewApex" >
+    <apex:form >
+    	<apex:inputText label="X" value="{!input1}"/>
+        <apex:inputText label="Y" value="{!input2}"/>
+        <apex:commandButton value="check" action="{!check}"/>
+    </apex:form>
+</apex:page>

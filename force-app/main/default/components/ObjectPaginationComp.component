@@ -1,0 +1,129 @@
+<apex:component Controller="ObjectPaginationCompController" allowDML="true" >
+    <apex:attribute name="oneSelectedObject" type="String" description="The object's name" required="true" assignTo="{!selectedObject}"/>
+    <apex:attribute name="allSelectedFields" type="String[]" description="Fields to be displayed" required="true" assignTo="{!selectedFields}"/>
+    
+    <!-- For parent and child checkbox select Records -->
+    <script>
+    function masterCheckBox() {
+        var inputCheckBox = document.getElementsByClassName("parent");                  
+        var value = inputCheckBox[0].checked;
+        var childInputCheckBox = [];
+        childInputCheckBox = document.getElementsByClassName("child");
+        for(var i=0;i<childInputCheckBox.length;i++) {
+            childInputCheckBox[i].checked = value;
+        }
+    }
+    function childToParentCheckBox() {
+        var masterInputCheckBox = document.getElementsByClassName("parent");
+        var childInputCheckBox = [];
+        childInputCheckBox = document.getElementsByClassName("child");
+        for(var i=0;i<childInputCheckBox.length;i++) {
+            if(childInputCheckBox[i].checked == false) {
+                masterInputCheckBox[0].checked = false;
+                break;
+            } else {
+                masterInputCheckBox[0].checked = true;
+            }
+        }
+    }
+    </script>
+    
+    <apex:form id="theform">
+        <!-- When click Process button -->
+        <apex:actionFunction name="displayRecord" action="{!fieldvalues}"/>
+        
+        <apex:pageBlock rendered="{!wrapperRecordList.size!=0 && ShowpageBlock}" id="pbId" >
+            <apex:panelGrid columns="1">
+                <!-- For alphabetic search-->
+                <div align="right">
+                    <apex:repeat value="{!alphaList}" var="alph">
+                        <apex:commandLink value="{!alph} | " action="{!sortAlphabetically}" reRender="pbtId">
+                            <apex:param name="alphabet" value="{!alph}" assignTo="{!alphaSearch}"/>                                
+                        </apex:commandLink>
+                    </apex:repeat>
+                </div>
+            </apex:panelGrid>
+            <apex:panelGrid columns="3">
+                <apex:commandButton value="NewRecord" onclick="window.open('/{!keyPrefixOfObject}/e')"/>       
+                <apex:commandButton value="Delete Selected" action="{!deleteSelected}" reRender="pbId" status="paginationStatus"/>
+                <apex:commandButton value="Download CSV" oncomplete="downloadCSV('{!csvFile}')"  action="{!downloadCSV}" status="paginationStatus"/>
+                <script>
+                function downloadCSV(csvOfRecord){
+                    //console.log(csvOfRecord);
+                    //console.log("Hello world!");
+                    var hiddenElement = document.createElement('a');  
+                    hiddenElement.href = 'data:text/csv;charset=utf-8,' + encodeURI(csvOfRecord);
+                    //the name for the CSV file to be downloaded  
+                    hiddenElement.download = 'Data.csv';
+                    hiddenElement.click();  
+                }
+                </script>
+                
+                
+            </apex:panelGrid>
+            {!wrapperRecordList.size}
+            <apex:pageBlockTable value="{!wrapperRecordList}" var="rec" id="pbtId">                 <!-- Records iterate --> 
+                
+                <!-- For parent and child checkbox select Records -->
+                <apex:column >
+                    <apex:facet name="header">
+                        <apex:inputCheckbox onclick="masterCheckBox()" styleClass="parent"/>
+                    </apex:facet>
+                    <apex:inputCheckbox value="{!rec.isSelected}" styleClass="child" onclick="childToParentCheckBox()"/>   
+                </apex:column>   
+                
+                <!-- Inline Edit and Delete -->
+                <apex:column >
+                    <apex:commandLink onclick="window.open('/{!rec.record.Id}/e')" style="font-weight:bold" >Edit |</apex:commandLink>
+                    <apex:commandLink action="{!deleteRecord}" onclick="if(!confirm('Are you sure?')) return false;" style="font-weight:bold" reRender="theform">Del 
+                        <apex:param value="{!rec.record.Id}" name="idToDel" assignTo="{!SelectedId}"/> 
+                    </apex:commandLink>
+                </apex:column>
+                
+                <apex:repeat value="{!selectedFields}" var="fld">              <!-- Fields iterate -->
+                    
+                    <!-- Fileds Sort -->
+                    <apex:column >
+                        <apex:facet name="header">
+                            <apex:commandLink value="{!fld}" action="{!sortByFields}" reRender="pbtId">
+                                <apex:param name="sortField" value="{!fld}" assignTo="{!sortField}"/>                                
+                            </apex:commandLink>
+                        </apex:facet>
+                        <apex:outputField value="{!rec.record[fld]}"/>
+                    </apex:column>
+                </apex:repeat>
+            </apex:pageBlockTable>
+            <apex:panelGrid columns="8">
+                
+                <apex:selectList value="{!size}" multiselect="false" size="1" >
+                    <apex:actionSupport event="onchange" action="{!refreshPageSize}" reRender="pbId"/>
+                    <apex:selectOptions value="{!paginationSizeOptions}"/>
+                </apex:selectList>
+                <apex:outputPanel style="text-align:center;" layout="block">
+                    <apex:commandButton value="First" reRender="pbId" action="{!first}" disabled="{!NOT(setCon.hasPrevious)}" status="paginationStatus"/>  
+                    <apex:commandButton value="Previous" rerender="pbId" action="{!previous}" disabled="{!NOT(setCon.hasPrevious)}" status="paginationStatus"/> 
+                    <apex:commandButton value="Next" rerender="pbId" action="{!next}" disabled="{!NOT(setCon.hasNext)}" status="paginationStatus"/>
+                    <apex:commandButton value="Last" rerender="pbId" action="{!last}" disabled="{!NOT(setCon.hasNext)}" status="paginationStatus"/>Page {!setCon.pageNumber} of {! CEILING( noOfRecords / setCon.PageSize) } 
+                    
+                    <!-- Spinner-->
+                    <apex:actionStatus id="paginationStatus" >
+                        <apex:facet name="start" >
+                            <apex:outputPanel >
+                                <div style="position: fixed; left: 0; top: 0; bottom: 0; right: 0; margin: 20% 50%">
+                                   <div style="display: inline-block; padding: 2px; background-color: #fff; width: 125px;">
+                                        <img src="/img/loading32.gif" width="25" height="25"/>
+                                    	<apex:outputLabel value="Loading..."/>
+                                    </div>
+                                </div>                
+                            </apex:outputPanel>    
+                        </apex:facet>
+                    </apex:actionStatus>
+                
+                </apex:outputPanel>
+                
+            </apex:panelGrid>
+            
+        </apex:pageBlock>
+    </apex:form>         
+    
+</apex:component>

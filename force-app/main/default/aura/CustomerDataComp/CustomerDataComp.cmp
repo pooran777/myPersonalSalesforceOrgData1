@@ -1,0 +1,61 @@
+<aura:component  controller="CustomerData" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes" access="global">
+    <aura:handler name="init" value="{!this}" action="{!c.init}" />
+    <aura:attribute name="listObjects" type="List" />
+    <aura:attribute name ="selectedObject" type="String"/> 
+    <aura:attribute name="listFields" type="List"/>    
+    <aura:attribute name="masterData" type="List"/>    
+
+    <lightning:button label="masterdata" onclick="{!c.masterdata}"/>
+
+    <lightning:card>
+        <lightning:select class = "slds-size_2-of-12" name="Objects" label="Select object:" value="{!v.selectedObject}" onchange = "{!c.allFields}">
+            <option value="">--None--</option>
+            <aura:iteration items="{!v.listObjects}" var="Objects">
+                <option text = "{!Objects.label}" value="{!Objects.value}" />  
+            </aura:iteration>
+        </lightning:select>
+    </lightning:card> 
+
+    <br/><br/>
+        <lightning:layout>
+            <aura:if isTrue="{!v.selectedObject}">
+                <lightning:layoutItem padding="around-small">
+                        <lightning:select name="Fields" label="">
+                            <option value="">--None--</option>
+                            <aura:iteration items="{!v.listFields}" var="fields">
+                                <option text = "{!fields.label}" value="{!fields.value}" />  
+                            </aura:iteration>
+                        </lightning:select>
+                </lightning:layoutItem>  
+            </aura:if>  
+            <lightning:layoutItem padding="around-small">
+                    <lightning:select name="masterData" label="">
+                        <option value="">--None--</option>
+                        <aura:iteration items="{!v.masterData}" var="data">
+                            <option text = "{!data.label}" value="{!data.value}" />  
+                        </aura:iteration>
+                    </lightning:select>
+            </lightning:layoutItem>    
+        </lightning:layout>
+
+        <lightning:layout>
+            <aura:if isTrue="{!v.selectedObject}">
+                <lightning:layoutItem padding="around-small">
+                        <lightning:select name="Fields" label="">
+                            <option value="">--None--</option>
+                            <aura:iteration items="{!v.listFields}" var="fields">
+                                <option text = "{!fields.label}" value="{!fields.value}" />  
+                            </aura:iteration>
+                        </lightning:select>
+                </lightning:layoutItem>  
+            </aura:if>  
+            <lightning:layoutItem padding="around-small">
+                    <lightning:select name="masterData" label="">
+                        <option value="">--None--</option>
+                        <aura:iteration items="{!v.masterData}" var="data">
+                            <option text = "{!data.label}" value="{!data.value}" />  
+                        </aura:iteration>
+                    </lightning:select>
+            </lightning:layoutItem>    
+        </lightning:layout>
+</aura:component>

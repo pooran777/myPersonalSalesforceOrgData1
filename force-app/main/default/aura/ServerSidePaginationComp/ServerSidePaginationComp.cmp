@@ -1,0 +1,95 @@
+<aura:component controller="ServerSidePagination" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes" access="global" >
+    <aura:attribute name="allObject" type="List" />
+    <aura:attribute name ="selectedObject" type="String"/> 
+    <aura:attribute name="allField" type="List"/>    
+    <aura:attribute name="selectedField" type="String"/>
+    <aura:attribute name="myData" type="Object"/>
+    <aura:attribute name="myColumns" type="List"/>
+    
+    <aura:attribute name="processButton" type="String" />
+    
+    <aura:attribute name="page" type="integer" description="store page Number"/>
+    <aura:attribute name="pages" type="integer" description="store All Pages page Number"/>
+    <aura:attribute name="total" type="integer" description="total records count store "/>
+    
+    <!--For checkbox -->
+    <!-- attribute to hold selected all rows -->
+    <aura:attribute name="selection" type="List" />
+    <!-- attribute to check if the page has changed or not -->
+    <aura:attribute name="hasPageChanged" type="Boolean" />
+    <!-- attribute to check if it is initialLoad -->
+    <aura:attribute name="initialLoad" type="Boolean" default="true"/>
+    
+    
+    <!--aura handler with waiting and donewaiting events-->
+    <aura:handler event="aura:waiting" action="{!c.showSpinner}"/>
+    <aura:handler event="aura:doneWaiting" action="{!c.hideSpinner}"/>
+    
+    <aura:attribute name="spinner" type="boolean" default="FALSE"/>
+    
+    <!--loading spinner start-->
+    <aura:if isTrue="{!v.spinner}">
+        <div aura:id="spinnerId" class="slds-spinner_container">
+            <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+                <span class="slds-assistive-text">Loading...</span>
+                <div class="slds-spinner__dot-a"></div>
+                <div class="slds-spinner__dot-b"></div>
+            </div>
+        </div>
+    </aura:if>
+    <!-- Loading spinner end-->   
+    
+    
+    <aura:handler name="init" value="{!this}" action="{!c.init}" />
+    <!-- For Objects -->
+    <lightning:card>
+        <lightning:select class = "slds-size_2-of-12" name="Objects" label="Select object:" aura:id="objId" value="{!v.selectedObject}" onchange = "{!c.allFields}">
+            <option value="">--None--</option>
+            <aura:iteration items="{!v.allObject}" var="objectName">
+                <option text = "{!objectName.label}" value="{!objectName.value}" />  
+            </aura:iteration>
+        </lightning:select>
+    </lightning:card> 
+    <br/><br/>
+    <aura:if isTrue="{!v.selectedObject}">  
+        <!-- For Fields -->
+        <lightning:dualListbox name="multipleOptions"  
+                               sourceLabel="Available Fields" 
+                               selectedLabel="Selected Fields"    
+                               options="{!v.allField}" 
+                               value="{!v.selectedField}"/>
+        
+        <lightning:button label="Process" onclick="{!c.allRecords}" disabled="{!!v.selectedField}"/>
+        
+    </aura:if>
+    <!-- For Records -->    
+    <aura:if isTrue ="{!v.myData}">
+        <lightning:card>
+            <lightning:datatable data="{!v.myData}"
+                                 columns="{!v.myColumns}"
+                                 keyField="Id"                               
+                                 hideCheckboxColumn="false"
+                                 selectedRows = "{!v.selection}"
+                                 onrowaction="{! c.handleRowAction }"
+                                 onrowselection ="{!c.onRowSelection}"/><br/>
+            <div class="slds-grid slds-gutters">
+                <div class="slds-col">
+                    <span><lightning:select class = "slds-size_1-of-8" aura:id = "recordSize" name="Records Per Page" label="Records Per Page:" onchange="{!c.onSelectChange}">
+                        <option text ="5"  value="5"/>
+                        <option text ="10" value="10"/>
+                        <option text ="20" value="20"/>  
+                        <option text ="50" value="50"/>
+                        </lightning:select></span>
+                </div>
+                <div class="slds-col">
+                    <span>  <lightning:button disabled="{!v.page == 1}" variant="brand" label="Previous" onclick="{! c.navigate }" />            
+                        <lightning:button disabled="{!v.page == v.pages}" aura:id="previousPage" variant="brand" label="Next" onclick="{! c.navigate }" />
+                    </span>
+                </div>
+                <div class="slds-col">
+                    <span> <p>page {!v.page} / {!v.pages}</p></span>
+                </div>
+            </div>
+        </lightning:card>
+    </aura:if>
+</aura:component>

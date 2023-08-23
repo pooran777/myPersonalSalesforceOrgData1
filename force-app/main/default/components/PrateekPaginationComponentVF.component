@@ -1,0 +1,136 @@
+<apex:component controller="PrateekPaginationComponent" allowDML="True" >
+    <apex:actionStatus id="pageStatus" >
+        <apex:facet name="start" >
+            <div style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; opacity: 0.25; z-index: 1000; background-color: black;">
+                &nbsp;
+            </div>
+            <div style="position: fixed; left: 0; top: 0; bottom: 0; right: 0; z-index: 1001; margin: 15% 50%">
+                <div style="display: inline-block; padding: 2px; background-color: #fff; width: 300px;">
+                    <img src=" /img/loading.gif" style="float: left; margin: 20px;" />
+                    <span style="display: inline-block; padding: 10px 0px;">Please Wait...</span>
+                </div>
+            </div>
+        </apex:facet>
+    </apex:actionStatus>	
+    
+    <apex:attribute name="myFields" Description="This is the name of the object selected" type="String[]"  assignTo="{!fieldselect}"  ></apex:attribute>
+    <apex:attribute name="myObject" Description="These are the fields of the object selected" type="String" assignTo="{!selectedobject}" ></apex:attribute>
+    <apex:pageBlock id="Pageblockid" >
+        
+        
+        <apex:actionFunction name="process" action="{!Query}"/>
+        
+        <apex:outputPanel layout="block" style="overflow:auto;width:700px;height:250px" >
+            <script>
+            function CsvDownload(csv) {
+                var csvFile;
+                var dLink;
+                
+                csvFile = new Blob([csv], {type: "text/csv"});        //csv file 
+                dLink = document.createElement("a");			// link for download the csv of records .
+                dLink.download = "Pagination.csv";			//file name for the downloaded records to store
+                dLink.href = window.URL.createObjectURL(csvFile);		// Create a link to the file
+                dLink.style.display = "none";				// hide download link by css property i.e. "display:none"
+                document.body.appendChild(dLink);			// Add link to DOM
+                dLink.click();
+            }
+            </script>
+            <apex:commandButton value="Create" action="{!Create}"  onclick="target='_blank'" status="pageStatus" />
+            <apex:commandButton value="Download CSV" action="{! CSVDownlaod}"   status="pageStatus" oncomplete="CsvDownload('{!csvString}')" reRender="PageBlockId"  />
+            <apex:commandButton value="Delete" action="{!deleteselectedRecord}" reRender="pbid" />
+            <div style="text_align:right">
+                
+                <apex:repeat value="{!ListOFAlphabets}" var="alpha" > 
+                    <apex:commandLink value="{!alpha}" action="{!alphabeticmethod}" reRender="pbid" status="pageStatus"  >&nbsp;
+                        <apex:param value="{!alpha}" assignTo="{!alphabet}" name="AlphabetSelect"  />
+                    </apex:commandLink>
+                </apex:repeat>
+            </div>
+            <apex:pageBlockTable value="{!WrapperRecordList}" var="a" id="pbid"  > 
+                <apex:column >
+                    <apex:facet name="header"><apex:inputCheckbox onclick="masterCheckBox()" styleClass="HeaderCheckBox" id="MasterId" />                   	
+                    </apex:facet>
+                    <script>
+                    function childCheckBox(){
+                        var master=document.getElementsByClassName('HeaderCheckBox');
+                        var child=document.getElementsByClassName('input');
+                        for(var v of child){
+                            if(v.checked==true){
+                                master[0].checked=true;
+                            }
+                            else{
+                                master[0].checked = false;
+                                break;
+                            }
+                        }
+                    }
+                    function masterCheckBox(){
+                        var master=document.getElementsByClassName('HeaderCheckBox');
+                        var child=document.getElementsByClassName('input');
+                        for(var v of child){
+                            if(master[0].checked ==true){
+                                v.checked=true;
+                            }
+                            else{
+                                v.checked=false;
+                            }
+                        }
+                    }
+                    </script>
+                    <apex:inputCheckbox styleClass="input"  value="{!a.isSelected}" onclick="childCheckBox()" />   
+                </apex:column>    
+                <apex:column headerValue="Edit|Delete" >
+                    <apex:outputLink title="Yo" value="/{!a.Sobjectrecord.id}/e?retURL=/apex/{!$CurrentPage.Name}" onclick="target='_blank'" >Edit</apex:outputLink> &nbsp;|&nbsp;
+                    <apex:commandLink value="Delete" action="{!deleterecords}" reRender="Pageblockid" immediate="true" >
+                        <apex:param name="deletethis" assignTo="{!selectedrowid}" value="{!a.Sobjectrecord.id}"  />
+                    </apex:commandLink>    
+                </apex:column>    
+                <apex:repeat value="{!fieldselect}"  var="b" >
+                    <apex:column Value="{!a.Sobjectrecord[b]}" onclick="window.open('/{!a.Sobjectrecord.id}')" >
+                        <apex:facet name="header" ><apex:commandLink value="{!b}" action="{!SortColumn}" reRender="pbid" >
+                            <apex:param name="clickToSort" value="{!b}" assignTo="{!FieldForSort}"/>
+                            </apex:commandLink>
+                        </apex:facet>
+                    </apex:column>
+                </apex:repeat>
+            </apex:pageBlockTable>
+            <script>
+            function changepage(){
+            }
+            </script>
+            <!--     <apex:actionFunction name="changepage" action="{!callpagechange}" reRender="pageblockid" />-->
+        </apex:outputPanel>
+        <table >
+            <tr>
+                <td >
+                    
+                    Page: <apex:inputText value="{! pagenumber}" id="inpid" style="width:20px;"  onkeydown="if(event.keyCode==13){this.blur();actionFunction();}"  /> of 
+                    
+                    <apex:actionFunction action="{! pageJump}" status="pageStatus" reRender="pbid,inpid" name="actionFunction" />    
+                    <apex:OutputText id="outid"  value=" {!show}"   />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                </td>
+                <td>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <apex:commandButton action="{!Next}" value="Next" reRender="Pageblockid" oncomplete="childCheckBox()" disabled="{!disable_next}" status="pageStatus" />
+                </td>
+                
+                <td>
+                    &nbsp;&nbsp;
+                    <apex:commandButton action="{!previous}" value="Previous" oncomplete="childCheckBox()" reRender="Pageblockid" disabled="{!disable_previous}" status="pageStatus" />
+                </td>
+                <td>
+                    &nbsp;&nbsp;
+                    <apex:commandButton action="{!Last}" value="Last" reRender="Pageblockid" disabled="{!disable_last}" status="pageStatus" />
+                </td>
+                <td>
+                    &nbsp;&nbsp;
+                    <apex:commandButton action="{!First}" value="First" reRender="Pageblockid" disabled="{!disable_first}" status="pageStatus" />
+                </td>
+            </tr>
+        </table>   
+        <apex:selectList value="{!recperpage}" multiselect="false" size="1"  >
+            <apex:selectOption itemValue="5" itemLabel="5" ></apex:selectOption>
+            <apex:selectOption itemValue="10" itemLabel="10" ></apex:selectOption>
+            <apex:actionSupport action="{!recordSize}" event="onchange"  status="pageStatus" oncomplete="childCheckBox()" reRender="pbid,outid" />
+        </apex:selectList>
+    </apex:pageBlock>
+</apex:component>

@@ -1,0 +1,85 @@
+<apex:page controller="PrateekPagination">
+    <apex:form id="formid">
+        <apex:actionStatus id="pageStatus" >
+            <apex:facet name="start" >
+                <div style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; opacity: 0.25; z-index: 1000; background-color: black;">
+                    &nbsp;
+                </div>
+                <div style="position: fixed; left: 0; top: 0; bottom: 0; right: 0; z-index: 1001; margin: 15% 50%">
+                    <div style="display: inline-block; padding: 2px; background-color: #fff; width: 300px;">
+                        <img src="/img/loading.gif" style="float: left; margin: 20px;" />
+                        <span style="display: inline-block; padding: 10px 0px;">Please Wait...</span>
+                    </div>
+                </div>
+            </apex:facet>
+        </apex:actionStatus>    
+        <apex:pageBlock id="pbid" >
+            
+            
+            <script>
+            function callinit(){
+            }
+            </script>
+            
+            <apex:pageBlockSection >
+                
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="All Objects"/>
+                    <apex:selectList size="1" value="{!selectedobj}" onchange="{!ResetFieldsList}" >
+                        <apex:selectOption itemLabel="None" itemValue="None" itemDisabled="{!checkfornone}" ></apex:selectOption>
+                        <apex:selectOptions value="{!objects}"/>
+                        <apex:actionSupport event="onchange" action="{!details}" reRender="pbid" status="pageStatus" />
+                    </apex:selectList>
+                    
+                </apex:pageBlockSectionItem>
+                
+                <apex:pageBlockSectionItem >
+                    <apex:commandButton value="Reset"  action="{!resetall}" reRender="formid,pbsid" rendered="{!hidebuttons}" status="pageStatus"/>
+                </apex:pageBlockSectionItem>
+                <apex:pageBlockSectionItem >
+                    <apex:panelGrid columns="3" >
+                        <apex:panelGroup style="width:40%"  >
+                            <apex:selectList value="{!sfields}" multiselect="true" style="width:200px;height:150px;" size="15" rendered="{!condition}" >
+                                <apex:selectOptions value="{!fnsoptions}"/>
+                                <apex:actionSupport reRender="formid"  action="{!resetcheckforadd}" />
+                            </apex:selectList>
+                        </apex:panelGroup>
+                        <apex:panelGroup style="width:20%;height:120px;">
+                            <table height="120px">
+                                <tr>
+                                    <td>
+                                        <apex:commandButton value="Add" action="{!addFields}" style="width:80px" reRender="formid,buttonid" status="pageStatus" disabled="{!checkforadd}" rendered="{!hidebuttons}" />
+                                    </td>
+                                </tr>                      
+                                <tr> 
+                                    <td>
+                                        <apex:commandButton value="Remove" action="{!removeFields}" style="width:80px" reRender="formid" status="pageStatus" disabled="{!check}" rendered="{!hidebuttons}" />
+                                    </td>
+                                </tr>
+                            </table>                         
+                        </apex:panelGroup>
+                        <apex:panelGroup >
+                            <apex:selectList value="{!rfields}" multiselect="true" style="width:200px;height:150px;" size="15" rendered="{!condition}" >
+                                <apex:selectOptions value="{!fsoptions}"/>
+                            </apex:selectList>
+                        </apex:panelGroup>
+                    </apex:panelGrid>
+                </apex:pageBlockSectionItem>
+            </apex:pageBlockSection>          
+            <div>
+                <apex:commandButton id="buttonid" value="Process" status="pageStatus" disabled="{!checkprocess}" action="{!resetshowcomponent}" oncomplete="getrecords()" rendered="{!hidebuttons}" reRender="componentid,pbid,pbsid"/> 
+            </div>
+            <apex:panelGrid id="pbsid">
+                <apex:pageBlockSection rendered="{!showcomponent}" >
+                    <script>
+                    function getrecords(){
+                        console.log("Hi");
+                        process();
+                    }
+                    </script>          
+                    <c:PrateekPaginationComponentVF myFields="{!selectedfieldApi}"  myObject="{!selectedobj}"  id="componentid"></c:PrateekPaginationComponentVF>     
+                </apex:pageBlockSection>
+            </apex:panelGrid>
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>

@@ -1,0 +1,8 @@
+<apex:page >
+	<apex:pageBlock title="User Status">
+    	<apex:pageBlockSection columns="1">
+           {$organization.name}
+                 
+        </apex:pageBlockSection>
+    </apex:pageBlock>
+</apex:page>

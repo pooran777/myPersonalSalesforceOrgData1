@@ -1,0 +1,3 @@
+<apex:page controller="ObjectPaginationCompController" applyHtmlTag="true" contentType="application/#Data.csv" cache="true" language="en-US">
+    {!csvFile}
+</apex:page>

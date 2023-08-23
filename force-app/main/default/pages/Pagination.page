@@ -1,0 +1,26 @@
+<apex:page standardController="Contact" recordSetVar="contacts">
+   <apex:form >   
+      <apex:pageBlock title="Contacts List">
+        
+        <apex:pageBlockTable value="{! contacts }" var="ct">
+            <table style="width: 100%"><tr>
+            <td>
+               Page: <apex:outputText value=" {!PageNumber} of {! CEILING(ResultSize / PageSize) }"/>
+            </td>
+            <td align="center">
+               <apex:commandLink action="{! Previous }" value="« Previous"
+                 rendered="{! HasPrevious }"/>
+            
+            <apex:outputText style="color: #ccc;" value="« Previous"
+                 rendered="{! NOT(HasPrevious) }"/>
+            
+                </td>
+        </tr></table>
+            <apex:column value="{! ct.FirstName }"/>
+            <apex:column value="{! ct.LastName }"/>
+            <apex:column value="{! ct.Email }"/>
+            <apex:column value="{! ct.Account.Name }"/>
+        </apex:pageBlockTable>
+    </apex:pageBlock>
+  </apex:form>     
+</apex:page>

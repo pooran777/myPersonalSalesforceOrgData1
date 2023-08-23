@@ -1,0 +1,14 @@
+<apex:page >
+    
+    <apex:pageBlock title="A Block Title">
+        <apex:pageBlockSection >
+            I'm three components deep!
+        </apex:pageBlockSection>
+         <apex:pageBlockSection >
+            I'm three components !
+        </apex:pageBlockSection>
+         <apex:pageBlockSection >
+            I'm three!
+        </apex:pageBlockSection>
+    </apex:pageBlock>
+</apex:page>
